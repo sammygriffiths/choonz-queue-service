@@ -1,0 +1,24 @@
+---
+driver:
+  name: docker
+  use_sudo: false
+
+provisioner:
+  name: chef_zero
+  product_name: chef
+  always_update_cookbooks: true
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: ubuntu-16.04
+
+suites:
+  - name: default
+    run_list:
+      - recipe[choonz-queue-service::default]
+    verifier:
+      inspec_tests:
+        - test/smoke/default
+    attributes:
