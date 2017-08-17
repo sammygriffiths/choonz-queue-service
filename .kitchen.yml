@@ -12,13 +12,13 @@ verifier:
   name: inspec
 
 platforms:
-  - name: ubuntu-16.04
+  - name: ubuntu-14.04
 
 suites:
-  - name: default
+  - name: app
     run_list:
-      - recipe[choonz-queue-service::default]
+      - recipe[choonz-queue-service::app]
     verifier:
       inspec_tests:
-        - test/smoke/default
+        - test/smoke/app
     attributes:
