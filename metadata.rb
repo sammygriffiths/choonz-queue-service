@@ -21,3 +21,5 @@ chef_version '>= 12.1' if respond_to?(:chef_version)
 
 depends 'nodejs'
 depends 'zookeeper'
+depends 'java'
+depends 'kafka'

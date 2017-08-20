@@ -24,11 +24,22 @@ suites:
     verifier:
       inspec_tests:
         - test/smoke/app
-    attributes:
+    driver_config:
+      instance_name: cqs-app
   - name: zookeeper
     run_list:
       - recipe[choonz-queue-service::zookeeper]
     verifier:
       inspec_tests:
         - test/smoke/zookeeper
-    attributes:
+    driver_config:
+      instance_name: cqs-zookeeper
+  - name: kafka
+    run_list:
+      - recipe[choonz-queue-service::kafka]
+    verifier:
+      inspec_tests:
+        - test/smoke/kafka
+    driver_config:
+      links: cqs-zookeeper:zookeeper
+      instance_name: cqs-kafka
