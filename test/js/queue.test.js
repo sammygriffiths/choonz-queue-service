@@ -2,7 +2,7 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 const assert = chai.assert;
-let queue = require('../src/app/queue');
+let queue = require('../../src/lib/queue');
 
 describe('Queue', function(){
   describe('Add', function(){
