@@ -6,17 +6,17 @@ let queue = require('../../src/lib/queue');
 
 describe('Queue', function(){
   describe('Add', function(){
-    it('should have an add method', function(){
+    it('has an add method', function(){
       assert.equal(typeof queue, 'object');
       assert.equal(typeof queue.add, 'function');
     });
 
-    it('should accept a valid spotify ID', function(){
+    it('accepts a valid spotify ID', function(){
       let spotify_id = '6rqhFgbbKwnb9MLmUQDhG6';
       return assert.isFulfilled(queue.add(spotify_id));
     });
 
-    it('should reject an invalid spotify ID', function(){
+    it('rejects an invalid spotify ID', function(){
       let spotify_id = 'INVALID';
       return assert.isRejected(queue.add(spotify_id), Error);
     });
