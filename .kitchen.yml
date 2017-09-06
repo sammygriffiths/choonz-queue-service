@@ -1,10 +1,12 @@
 ---
+transport:
+  username: kitchen
+  
 driver:
   name: docker
+  privileged: true
   use_sudo: false
-  disable_upstart: false
-  image: ubuntu-upstart:14.04
-  run_command: /sbin/init
+  use_latest_docker: true
 
 provisioner:
   name: chef_zero
@@ -13,33 +15,43 @@ provisioner:
 
 verifier:
   name: inspec
+  sudo: false
 
 platforms:
-  - name: ubuntu-14.04
+  - name: centos
+    driver_config:
+      dockerfile: dockerfiles/centos7
+      platform: centos
+      run_command: /usr/sbin/init
+    attributes:
+      is_docker: true
+      host_uid: <%= `id -u` %>
+      host_gid: <%= `id -g` %>
+      CI: <%= ENV["CI"] %>
 
 suites:
   - name: app
     run_list:
       - recipe[choonz-queue-service::app]
-    verifier:
-      inspec_tests:
-        - test/smoke/app
     driver_config:
       instance_name: cqs-app
-  - name: zookeeper
-    run_list:
-      - recipe[choonz-queue-service::zookeeper]
-    verifier:
-      inspec_tests:
-        - test/smoke/zookeeper
-    driver_config:
-      instance_name: cqs-zookeeper
-  - name: kafka
-    run_list:
-      - recipe[choonz-queue-service::kafka]
-    verifier:
-      inspec_tests:
-        - test/smoke/kafka
-    driver_config:
-      links: cqs-zookeeper:zookeeper
-      instance_name: cqs-kafka
+  # - name: zookeeper
+  #   run_list:
+  #     - recipe[choonz-queue-service::zookeeper]
+  #   verifier:
+  #     inspec_tests:
+  #       - test/smoke/zookeeper
+  #   driver_config:
+  #     instance_name: cqs-zookeeper
+  # - name: kafka
+  #   # run_list:
+  #   #   - recipe[choonz-queue-service::kafka]
+  #   verifier:
+  #     inspec_tests:
+  #       - test/smoke/kafka
+  #   driver_config:
+  #     disable_upstart: false
+  #     links: cqs-zookeeper:zookeeper
+  #     instance_name: cqs-kafka
+  #     image: ches/kafka
+  #     run_options: --env ZOOKEEPER_IP=zookeeper
