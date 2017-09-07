@@ -17,9 +17,7 @@ RUN yum clean all && \
         ssh-keygen -A && \
         systemctl enable sshd.service
 
-# utility
-RUN yum install -y nc
-
-EXPOSE 22
+# TODO: Remove this when inspec supports `ss`
+RUN yum install -y net-tools
 
 CMD ["/usr/sbin/init"]

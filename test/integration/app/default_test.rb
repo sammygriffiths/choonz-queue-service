@@ -9,3 +9,18 @@ describe bash('node -v') do
   its('exit_status') { should eq 0 }
   its('stdout') { should match /8\.\d\.\d/ }
 end
+
+describe file('/home/kitchen/test.js') do
+  it { should exist }
+end
+
+describe service('choonz-queue') do
+  it { should be_installed }
+  it { should be_enabled }
+  it { should be_running }
+end
+
+describe port(3000) do
+  it { should be_listening }
+  its('processes') {should include 'node'}
+end
