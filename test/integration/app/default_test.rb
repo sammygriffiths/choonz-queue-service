@@ -10,7 +10,11 @@ describe bash('node -v') do
   its('stdout') { should match /8\.\d\.\d/ }
 end
 
-describe file('/home/kitchen/test.js') do
+describe directory('/var/www/app') do
+  it { should exist }
+end
+
+describe file('/var/www/app/src/bin/www') do
   it { should exist }
 end
 

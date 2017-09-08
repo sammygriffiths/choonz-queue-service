@@ -37,6 +37,8 @@ suites:
       instance_name: cqs-app
       forward:
       - 80:3000
+      volume:
+      - <%= ENV["PWD"] %>:/var/www/app
   # - name: zookeeper
   #   run_list:
   #     - recipe[choonz-queue-service::zookeeper]
