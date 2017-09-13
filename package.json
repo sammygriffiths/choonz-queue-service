@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./src/bin/www",
-    "test": "mocha test/js"
+    "test": "mocha test/js --recursive"
   },
   "dependencies": {
     "body-parser": "~1.17.1",
