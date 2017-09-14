@@ -29,11 +29,55 @@ describe('Song route', () => {
                 
                 expect(result.error).to.equal(null);
             });
-
-            it('doesn\'t validate when an invalid song id is given', () => {
+            
+            it('doesn\'t validate when something other than a string is given', () => {
                 let req = {
                     body: {
-                        spotify_id: 'invalid'
+                        spotify_id: true
+                    }
+                };
+                const result = queue.song.add.clientInputSchema.validate(req);
+                
+                expect(result.error).to.not.equal(null);
+            });
+            
+            it('doesn\'t validate when non-alphanumeric characters are given', () => {
+                let req = {
+                    body: {
+                        spotify_id: '6rqhFgbbKwnb9MLm_QDhG6'
+                    }
+                };
+                const result = queue.song.add.clientInputSchema.validate(req);
+                
+                expect(result.error).to.not.equal(null);
+            });
+
+            it('doesn\'t validate when an empty song id is given', () => {
+                let req = {
+                    body: {
+                        spotify_id: ''
+                    }
+                };
+                const result = queue.song.add.clientInputSchema.validate(req);
+                
+                expect(result.error).to.not.equal(null);
+            });
+
+            it('doesn\'t validate when a song id shorter than 22 characters is given', () => {
+                let req = {
+                    body: {
+                        spotify_id: '6rqhFgbbKwnb9MLmUQD'
+                    }
+                };
+                const result = queue.song.add.clientInputSchema.validate(req);
+                
+                expect(result.error).to.not.equal(null);
+            });
+
+            it('doesn\'t validate when a song id greater than 22 characters is given', () => {
+                let req = {
+                    body: {
+                        spotify_id: '6rqhFgbbKwnb9MLmUQDhG6123'
                     }
                 };
                 const result = queue.song.add.clientInputSchema.validate(req);
