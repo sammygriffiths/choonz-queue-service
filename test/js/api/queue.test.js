@@ -17,6 +17,13 @@ describe('Song route', () => {
 
             expect(result.error).to.not.equal(null);
         });
+        it('doesn\'t validate when an empty body is given', () => {
+            const result = queue.song.add.clientInputSchema.validate({
+                body: {}
+            });
+
+            expect(result.error).to.not.equal(null);
+        });
 
         describe('Spotify', () => {
             it('accepts a spotify_id param', () => {
