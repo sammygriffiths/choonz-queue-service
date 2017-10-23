@@ -12,9 +12,9 @@ queue.song.add = {
     },
     clientInputSchema: joi.object().keys({
         body: joi.object().keys({
-            spotify_id: joi.string().alphanum().min(22).max(22)
+            spotify_id: joi.string().alphanum().min(22).max(22).required()
         }).required()
-    }).required()
+    }).required().unknown()
 };
 
 module.exports = queue;
