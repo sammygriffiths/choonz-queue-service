@@ -1,6 +1,6 @@
 'use strict';
 
-const ClientValidationError = require('../../../src/lib/errors/ClientValidationError');
+const ClientValidationError = require('../errors/ClientValidationError');
 
 module.exports = (schema) => (req, res, next) => {
     const result = schema.validate(req);
