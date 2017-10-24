@@ -7,8 +7,10 @@ let queue = {
 };
 
 queue.song.add = {
-    handler: (req, res, next) => {
-        res.send('string');
+    handler: (sonos) => (req, res, next) => {
+        sonos.currentTrack((err, track) => {
+            res.send(track);
+        })
     },
     clientInputSchema: joi.object().keys({
         body: joi.object().keys({
