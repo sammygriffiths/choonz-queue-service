@@ -20,6 +20,6 @@
     "redis": "^2.8.0",
     "serve-favicon": "~2.4.2",
     "sinon": "^3.2.1",
-    "sonos": "git://github.com/sammygriffiths/node-sonos.git#get_current_queue_number"
+    "sonos": "^0.18.0"
   }
 }
