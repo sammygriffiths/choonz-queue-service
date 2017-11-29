@@ -1,16 +1,24 @@
 'use strict';
 
 const joi = require('joi');
+const promisifyAll = require('bluebird').promisifyAll;
 
 let queue = {
     song: {}
 };
 
 queue.song.add = {
-    handler: (sonos) => (req, res, next) => {
-        sonos.currentTrack((err, track) => {
-            res.send(track);
-        })
+    handler: (sonos) => async (req, res, next) => {
+        sonos = promisifyAll(sonos);
+
+        try {
+            let track = await sonos.currentTrackAsync();
+            let queuePosition = track.queuePosition;
+            res.send(queuePosition.toString());
+        } catch(e) {
+            console.log(e);
+            next(e);
+        }
     },
     clientInputSchema: joi.object().keys({
         body: joi.object().keys({

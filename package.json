@@ -7,6 +7,7 @@
     "test": "mocha test/js --recursive"
   },
   "dependencies": {
+    "bluebird": "^3.5.1",
     "body-parser": "~1.17.1",
     "chai": "^4.1.1",
     "chai-as-promised": "^7.1.1",
@@ -19,6 +20,6 @@
     "redis": "^2.8.0",
     "serve-favicon": "~2.4.2",
     "sinon": "^3.2.1",
-    "sonos": "^0.17.0"
+    "sonos": "git://github.com/sammygriffiths/node-sonos.git#get_current_queue_number"
   }
 }

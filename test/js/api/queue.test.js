@@ -91,6 +91,18 @@ describe('Song route', () => {
                 
                 expect(result.error).to.not.equal(null);
             });
-        })
+        });
+
+        describe('Handler', () => {
+            it('gets the currently playing track', () => {
+                const sonos = {
+                    currentTrack: sinon.spy()
+                };
+
+                queue.song.add.handler(sonos)();
+
+                sinon.assert.calledOnce(sonos.currentTrack);
+            });
+        });
     });
 });
