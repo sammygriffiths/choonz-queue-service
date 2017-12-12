@@ -8,13 +8,14 @@ let queue = {
 };
 
 queue.song.add = {
-    handler: (sonos) => async (req, res, next) => {
+    handler: (sonos, redis) => async (req, res, next) => {
         sonos = promisifyAll(sonos);
+        redis = promisifyAll(redis);
 
         try {
             let track = await sonos.currentTrackAsync();
             let queuePosition = track.queuePosition;
-            res.send(queuePosition.toString());
+            let lastAddedPosition = await redis.getAsync('lastAddedPosition');
         } catch(e) {
             console.log(e);
             next(e);

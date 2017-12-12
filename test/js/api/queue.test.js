@@ -2,8 +2,10 @@
 
 const expect = require('chai').expect;
 const sinon = require('sinon');
-
 const queue = require('../../../src/lib/api/routes/queue.js');
+
+let sonos;
+let redis;
 
 describe('Song route', () => {
     describe('Add', () => {
@@ -94,14 +96,25 @@ describe('Song route', () => {
         });
 
         describe('Handler', () => {
-            it('gets the currently playing track', () => {
-                const sonos = {
-                    currentTrack: sinon.spy()
+            beforeEach(() => {
+                sonos = {
+                    currentTrackAsync: sinon.stub().resolves(1),
                 };
+                redis = {
+                    getAsync: sinon.stub().resolves(2),
+                };
+            });
 
-                queue.song.add.handler(sonos)();
+            it('gets the currently playing track', async () => {
+                await queue.song.add.handler(sonos, redis)({}, {}, () => {});
 
-                sinon.assert.calledOnce(sonos.currentTrack);
+                sinon.assert.calledOnce(sonos.currentTrackAsync);
+            });
+            
+            it('gets the last added song', async () => {
+                await queue.song.add.handler(sonos, redis)({}, {}, () => {});
+
+                sinon.assert.calledWith(redis.getAsync, 'lastAddedPosition');
             });
         });
     });
