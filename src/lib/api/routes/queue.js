@@ -16,6 +16,14 @@ queue.song.add = {
             let track = await sonos.currentTrackAsync();
             let queuePosition = track.queuePosition;
             let lastAddedPosition = await redis.getAsync('lastAddedPosition');
+            let newQueuePosition = 3;
+
+            // Queue song
+            sonos.queueAsync('spotify:track:' + req.body.spotify_id, newQueuePosition);
+
+            // Set new lastAddedPosition in redis
+            redis.setAsync('lastAddedPosition', newQueuePosition);
+
         } catch(e) {
             console.log(e);
             next(e);
