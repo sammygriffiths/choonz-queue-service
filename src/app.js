@@ -4,14 +4,17 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const Sonos = require('sonos').Sonos;
+const sonosPackage = require('sonos');
+const Sonos = sonosPackage.Sonos;
 const redisPackage = require('redis');
 
 const api = require('./lib/api');
 
 const app = express();
 
+const spotifyRegion = process.env.SPOTIFY_REGION || 'EU';
 const sonos = new Sonos(process.env.SONOS_HOST || '192.168.1.8');
+sonos.setSpotifyRegion(sonosPackage.SpotifyRegion[spotifyRegion]);
 
 const redis = redisPackage.createClient({
   host: process.env.REDIS_HOST || '127.0.0.1',
