@@ -3,6 +3,9 @@
 module.exports = {
     calculateNewQueuePosition: (currentQueuePosition, lastAddedPosition) => {
         return new Promise((resolve, reject) => {
+            currentQueuePosition = parseInt(currentQueuePosition);
+            lastAddedPosition = parseInt(lastAddedPosition);
+
             if (
                 !Number.isInteger(currentQueuePosition + lastAddedPosition) ||
                 !(currentQueuePosition >= 0) || !(lastAddedPosition >= 0)
