@@ -27,6 +27,9 @@ queue.song.add = {
 
             await redis.setAsync('lastAddedPosition', newQueuePosition);
 
+            res.json({
+                queuePosition: newQueuePosition
+            });
         } catch(e) {
             console.log(e);
             next(e);
