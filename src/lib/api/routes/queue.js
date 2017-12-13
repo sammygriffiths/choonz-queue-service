@@ -2,6 +2,7 @@
 
 const joi = require('joi');
 const promisifyAll = require('bluebird').promisifyAll;
+const sonosHelper = require('../../helpers/sonos');
 
 let queue = {
     song: {}
@@ -14,14 +15,16 @@ queue.song.add = {
 
         try {
             let track = await sonos.currentTrackAsync();
-            let queuePosition = track.queuePosition;
+            let currentQueuePosition = track.queuePosition;
             let lastAddedPosition = await redis.getAsync('lastAddedPosition');
-            let newQueuePosition = 3;
 
-            // Queue song
+            let newQueuePosition = await sonosHelper.calculateNewQueuePosition(
+                currentQueuePosition,
+                lastAddedPosition
+            );
+
             sonos.queueAsync('spotify:track:' + req.body.spotify_id, newQueuePosition);
 
-            // Set new lastAddedPosition in redis
             redis.setAsync('lastAddedPosition', newQueuePosition);
 
         } catch(e) {

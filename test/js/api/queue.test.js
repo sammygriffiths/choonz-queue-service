@@ -99,7 +99,9 @@ describe('Song route', () => {
         describe('Handler', () => {
             beforeEach(() => {
                 sonos = {
-                    currentTrackAsync: sinon.stub().resolves(1),
+                    currentTrackAsync: sinon.stub().resolves({
+                        queuePosition: 1
+                    }),
                     queueAsync: sinon.spy()
                 };
                 redis = {
