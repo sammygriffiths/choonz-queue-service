@@ -16,8 +16,7 @@ queue.song.add = {
 
             let track = await sonos.currentTrackAsync();
             let currentQueuePosition = track.queuePosition;
-            let lastAddedPosition = await redis.getAsync('lastAddedPosition');
-
+            let lastAddedPosition = await redis.getAsync('lastAddedPosition') || 0;
             let newQueuePosition = await sonosHelper.calculateNewQueuePosition(
                 currentQueuePosition,
                 lastAddedPosition
@@ -40,6 +39,25 @@ queue.song.add = {
             spotify_id: joi.string().alphanum().min(22).max(22).required()
         }).required()
     }).required().unknown()
+};
+
+queue.clear = {
+    handler: (sonos, redis) => async (req, res, next) => {
+        sonos = promisifyAll(sonos);
+        redis = promisifyAll(redis);
+
+        sonos.flushAsync().catch((e) => {
+            console.log(e);
+            next(e);
+        });
+
+        redis.delAsync('lastAddedPosition').catch((e) => {
+            console.log(e);
+            next(e);
+        });
+
+        res.json([])
+    }
 };
 
 module.exports = queue;

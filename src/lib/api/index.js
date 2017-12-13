@@ -13,5 +13,7 @@ module.exports = (dependencies) => {
         queue.song.add.handler(sonos, redis)
     );
 
+    router.get('/queue/clear', queue.clear.handler(sonos, redis));
+
     return router;
 };
