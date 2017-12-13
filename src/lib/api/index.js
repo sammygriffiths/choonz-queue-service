@@ -10,7 +10,7 @@ module.exports = (dependencies) => {
 
     router.post('/song/add',
         validateClientInput(queue.song.add.clientInputSchema),
-        queue.song.add.handler(sonos)
+        queue.song.add.handler(sonos, redis)
     );
 
     return router;

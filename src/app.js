@@ -5,12 +5,18 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const Sonos = require('sonos').Sonos;
+const redisPackage = require('redis');
 
 const api = require('./lib/api');
 
 const app = express();
 
 const sonos = new Sonos(process.env.SONOS_HOST || '192.168.1.8');
+
+const redis = redisPackage.createClient({
+  host: process.env.REDIS_HOST || '127.0.0.1',
+  port: process.env.REDIS_PORT || '6379'
+});
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -20,7 +26,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', api({ sonos }));
+app.use('/', api({ sonos, redis }));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
