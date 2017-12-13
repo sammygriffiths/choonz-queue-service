@@ -10,10 +10,10 @@ let queue = {
 
 queue.song.add = {
     handler: (sonos, redis) => async (req, res, next) => {
-        sonos = promisifyAll(sonos);
-        redis = promisifyAll(redis);
-
         try {
+            sonos = promisifyAll(sonos);
+            redis = promisifyAll(redis);
+
             let track = await sonos.currentTrackAsync();
             let currentQueuePosition = track.queuePosition;
             let lastAddedPosition = await redis.getAsync('lastAddedPosition');
@@ -23,9 +23,9 @@ queue.song.add = {
                 lastAddedPosition
             );
 
-            sonos.queueAsync('spotify:track:' + req.body.spotify_id, newQueuePosition);
+            await sonos.queueAsync('spotify:track:' + req.body.spotify_id, newQueuePosition);
 
-            redis.setAsync('lastAddedPosition', newQueuePosition);
+            await redis.setAsync('lastAddedPosition', newQueuePosition);
 
         } catch(e) {
             console.log(e);

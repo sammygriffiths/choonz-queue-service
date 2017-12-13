@@ -138,6 +138,13 @@ describe('Song route', () => {
 
                 sinon.assert.calledWith(redis.setAsync, 'lastAddedPosition', 3);
             });
+
+            it('doesn\'t send anything to redis unless adding to sonos was successful', async () => {
+                sonos.queueAsync = sinon.stub().rejects();
+                await queue.song.add.handler(sonos, redis)(req, {}, () => {});
+
+                sinon.assert.notCalled(redis.setAsync);
+            });
         });
     });
 });
