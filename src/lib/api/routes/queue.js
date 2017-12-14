@@ -4,6 +4,8 @@ const joi = require('joi');
 const promisifyAll = require('bluebird').promisifyAll;
 const sonosHelper = require('../../helpers/sonos');
 
+const redisLastPositionKey = 'lastAddedPosition';
+
 let queue = {
     song: {}
 };
@@ -16,7 +18,7 @@ queue.song.add = {
 
             let track = await sonos.currentTrackAsync();
             let currentQueuePosition = track.queuePosition;
-            let lastAddedPosition = await redis.getAsync('lastAddedPosition') || 0;
+            let lastAddedPosition = await redis.getAsync(redisLastPositionKey) || 0;
             let newQueuePosition = await sonosHelper.calculateNewQueuePosition(
                 currentQueuePosition,
                 lastAddedPosition
@@ -24,7 +26,7 @@ queue.song.add = {
 
             await sonos.queueAsync('spotify:track:' + req.body.spotify_id, newQueuePosition);
 
-            await redis.setAsync('lastAddedPosition', newQueuePosition);
+            await redis.setAsync(redisLastPositionKey, newQueuePosition);
 
             res.json({
                 queuePosition: newQueuePosition
@@ -51,12 +53,23 @@ queue.clear = {
             next(e);
         });
 
-        redis.delAsync('lastAddedPosition').catch((e) => {
+        redis.delAsync(redisLastPositionKey).catch((e) => {
             console.log(e);
             next(e);
         });
 
         res.json([]);
+    }
+};
+
+queue.resetMostRecent = {
+    handler: (redis) => (req, res, next) => {
+        redis = promisifyAll(redis);
+
+        redis.delAsync(redisLastPositionKey).catch((e) => {
+            console.log(e);
+            next(e);
+        });
     }
 };
 

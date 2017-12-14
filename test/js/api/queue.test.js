@@ -4,6 +4,8 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const queue = require('../../../src/lib/api/routes/queue.js');
 
+let error = new Error('This is a mock error');
+
 let sonos;
 let redis;
 let req;
@@ -146,7 +148,7 @@ describe('Queue route', () => {
                 });
     
                 it('doesn\'t send anything to redis unless adding to sonos was successful', async () => {
-                    sonos.queueAsync = sinon.stub().rejects();
+                    sonos.queueAsync = sinon.stub().rejects(error);
                     await queue.song.add.handler(sonos, redis)(req, res, () => {});
     
                     sinon.assert.notCalled(redis.setAsync);
@@ -179,11 +181,28 @@ describe('Queue route', () => {
             });
 
             it('calls next with an error if there is an error', async () => {
-                let error = new Error('This is an error');
                 sonos.flushAsync = sinon.stub().rejects(error);
                 let next = sinon.spy();
 
                 await queue.clear.handler(sonos, redis)(req, res, next);
+
+                sinon.assert.calledWith(next, error);
+            });
+        });
+    });
+    describe('Reset most recent', () => {
+        describe('Handler', () => {
+            it('resets most recent in redis', () => {
+                queue.resetMostRecent.handler(redis)(req, res, () => {});
+
+                sinon.assert.calledWith(redis.delAsync, 'lastAddedPosition');
+            });
+
+            it('calls next with an error if there is an error', async () => {
+                redis.delAsync = sinon.stub().rejects(error);
+                let next = sinon.spy();
+
+                await queue.resetMostRecent.handler(redis)(req, res, next);
 
                 sinon.assert.calledWith(next, error);
             });

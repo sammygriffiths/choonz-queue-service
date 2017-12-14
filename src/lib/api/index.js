@@ -15,5 +15,7 @@ module.exports = (dependencies) => {
 
     router.get('/queue/clear', queue.clear.handler(sonos, redis));
 
+    router.get('/queue/most-recent/reset', queue.resetMostRecent.handler(redis));
+
     return router;
 };
