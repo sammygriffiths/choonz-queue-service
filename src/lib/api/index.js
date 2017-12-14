@@ -8,14 +8,14 @@ const validateClientInput = require('../middleware/validateClientInput');
 module.exports = (dependencies) => {
     const { sonos, redis } = dependencies;
 
-    router.post('/song/add',
-        validateClientInput(queue.song.add.clientInputSchema),
+    router.post('/songs',
+        validateClientInput(queue.songs.create.clientInputSchema),
         queue.song.add.handler(sonos, redis)
     );
 
-    router.get('/queue/clear', queue.clear.handler(sonos, redis));
+    router.delete('/songs', queue.songs.delete.handler(sonos, redis));
 
-    router.get('/queue/most-recent/reset', queue.mostRecent.reset.handler(redis));
+    router.delete('/songs/recently-added', queue.songs.recentlyAdded.delete.handler(redis));
 
     return router;
 };

@@ -34,20 +34,20 @@ describe('Queue route', () => {
             json: sinon.stub()
         }
     });
-    describe('Song route', () => {
-        describe('Add', () => {
+    describe('Songs route', () => {
+        describe('Create', () => {
             it('doesn\'t validate when no object is given', () => {
-                const result = queue.song.add.clientInputSchema.validate();
+                const result = queue.songs.create.clientInputSchema.validate();
     
                 expect(result.error).to.not.equal(null);
             });
             it('doesn\'t validate when an empty object is given', () => {
-                const result = queue.song.add.clientInputSchema.validate({});
+                const result = queue.songs.create.clientInputSchema.validate({});
     
                 expect(result.error).to.not.equal(null);
             });
             it('doesn\'t validate when an empty body is given', () => {
-                const result = queue.song.add.clientInputSchema.validate({
+                const result = queue.songs.create.clientInputSchema.validate({
                     body: {}
                 });
     
@@ -61,7 +61,7 @@ describe('Queue route', () => {
                             spotify_id: '6rqhFgbbKwnb9MLmUQDhG6'
                         }
                     };
-                    const result = queue.song.add.clientInputSchema.validate(req);
+                    const result = queue.songs.create.clientInputSchema.validate(req);
                     
                     expect(result.error).to.equal(null);
                 });
@@ -72,7 +72,7 @@ describe('Queue route', () => {
                             spotify_id: true
                         }
                     };
-                    const result = queue.song.add.clientInputSchema.validate(req);
+                    const result = queue.songs.create.clientInputSchema.validate(req);
                     
                     expect(result.error).to.not.equal(null);
                 });
@@ -83,7 +83,7 @@ describe('Queue route', () => {
                             spotify_id: '6rqhFgbbKwnb9MLm_QDhG6'
                         }
                     };
-                    const result = queue.song.add.clientInputSchema.validate(req);
+                    const result = queue.songs.create.clientInputSchema.validate(req);
                     
                     expect(result.error).to.not.equal(null);
                 });
@@ -94,7 +94,7 @@ describe('Queue route', () => {
                             spotify_id: ''
                         }
                     };
-                    const result = queue.song.add.clientInputSchema.validate(req);
+                    const result = queue.songs.create.clientInputSchema.validate(req);
                     
                     expect(result.error).to.not.equal(null);
                 });
@@ -105,7 +105,7 @@ describe('Queue route', () => {
                             spotify_id: '6rqhFgbbKwnb9MLmUQD'
                         }
                     };
-                    const result = queue.song.add.clientInputSchema.validate(req);
+                    const result = queue.songs.create.clientInputSchema.validate(req);
                     
                     expect(result.error).to.not.equal(null);
                 });
@@ -116,7 +116,7 @@ describe('Queue route', () => {
                             spotify_id: '6rqhFgbbKwnb9MLmUQDhG6123'
                         }
                     };
-                    const result = queue.song.add.clientInputSchema.validate(req);
+                    const result = queue.songs.create.clientInputSchema.validate(req);
                     
                     expect(result.error).to.not.equal(null);
                 });
@@ -124,32 +124,32 @@ describe('Queue route', () => {
     
             describe('Handler', () => {
                 it('gets the currently playing track', async () => {
-                    await queue.song.add.handler(sonos, redis)(req, res, () => {});
+                    await queue.songs.create.handler(sonos, redis)(req, res, () => {});
     
                     sinon.assert.calledOnce(sonos.currentTrackAsync);
                 });
                 
                 it('gets the last added song', async () => {
-                    await queue.song.add.handler(sonos, redis)(req, res, () => {});
+                    await queue.songs.create.handler(sonos, redis)(req, res, () => {});
     
                     sinon.assert.calledWith(redis.getAsync, 'lastAddedPosition');
                 });
     
                 it('sends the correct song info to sonos', async () => {
-                    await queue.song.add.handler(sonos, redis)(req, res, () => {});
+                    await queue.songs.create.handler(sonos, redis)(req, res, () => {});
     
                     sinon.assert.calledWith(sonos.queueAsync, 'spotify:track:' + req.body.spotify_id, 3);
                 });
     
                 it('sends the correct place in the queue to redis', async () => {
-                    await queue.song.add.handler(sonos, redis)(req, res, () => {});
+                    await queue.songs.create.handler(sonos, redis)(req, res, () => {});
     
                     sinon.assert.calledWith(redis.setAsync, 'lastAddedPosition', 3);
                 });
     
                 it('doesn\'t send anything to redis unless adding to sonos was successful', async () => {
                     sonos.queueAsync = sinon.stub().rejects(error);
-                    await queue.song.add.handler(sonos, redis)(req, res, () => {});
+                    await queue.songs.create.handler(sonos, redis)(req, res, () => {});
     
                     sinon.assert.notCalled(redis.setAsync);
                 });
@@ -159,52 +159,54 @@ describe('Queue route', () => {
                     sonos.currentTrackAsync = sinon.stub().rejects(error);
                     let next = sinon.spy();
 
-                    await queue.song.add.handler(sonos, redis)(req, res, next);
+                    await queue.songs.create.handler(sonos, redis)(req, res, next);
 
                     sinon.assert.calledWith(next, error);
                 });
             });
         });
-    });
-    describe('Clear', () => {
-        describe('Handler', () => {
-            it('clears the sonos queue', async () => {
-                await queue.clear.handler(sonos, redis)(req, res, () => {});
+        describe('Delete', () => {
+            describe('Handler', () => {
+                it('clears the sonos queue', async () => {
+                    await queue.songs.delete.handler(sonos, redis)(req, res, () => {});
+                    
+                    sinon.assert.calledOnce(sonos.flushAsync);
+                });
                 
-                sinon.assert.calledOnce(sonos.flushAsync);
-            });
-            
-            it('resets most recent in redis', async () => {
-                await queue.clear.handler(sonos, redis)(req, res, () => {});
-                
-                sinon.assert.calledWith(redis.delAsync, 'lastAddedPosition');
-            });
+                it('resets most recent in redis', async () => {
+                    await queue.songs.delete.handler(sonos, redis)(req, res, () => {});
+                    
+                    sinon.assert.calledWith(redis.delAsync, 'lastAddedPosition');
+                });
 
-            it('calls next with an error if there is an error', async () => {
-                sonos.flushAsync = sinon.stub().rejects(error);
-                let next = sinon.spy();
+                it('calls next with an error if there is an error', async () => {
+                    sonos.flushAsync = sinon.stub().rejects(error);
+                    let next = sinon.spy();
 
-                await queue.clear.handler(sonos, redis)(req, res, next);
+                    await queue.songs.delete.handler(sonos, redis)(req, res, next);
 
-                sinon.assert.calledWith(next, error);
+                    sinon.assert.calledWith(next, error);
+                });
             });
         });
-    });
-    describe('Reset most recent', () => {
-        describe('Handler', () => {
-            it('resets most recent in redis', () => {
-                queue.mostRecent.reset.handler(redis)(req, res, () => {});
+        describe('Recently added route', () => {
+            describe('Delete', () => {
+                describe('Handler', () => {
+                    it('resets most recent in redis', () => {
+                        queue.songs.recentlyAdded.delete.handler(redis)(req, res, () => {});
 
-                sinon.assert.calledWith(redis.delAsync, 'lastAddedPosition');
-            });
+                        sinon.assert.calledWith(redis.delAsync, 'lastAddedPosition');
+                    });
 
-            it('calls next with an error if there is an error', async () => {
-                redis.delAsync = sinon.stub().rejects(error);
-                let next = sinon.spy();
+                    it('calls next with an error if there is an error', async () => {
+                        redis.delAsync = sinon.stub().rejects(error);
+                        let next = sinon.spy();
 
-                await queue.mostRecent.reset.handler(redis)(req, res, next);
+                        await queue.songs.recentlyAdded.delete.handler(redis)(req, res, next);
 
-                sinon.assert.calledWith(next, error);
+                        sinon.assert.calledWith(next, error);
+                    });
+                });
             });
         });
     });
