@@ -56,7 +56,7 @@ queue.clear = {
             next(e);
         });
 
-        res.json([])
+        res.json([]);
     }
 };
 
