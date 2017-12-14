@@ -7,7 +7,8 @@ const sonosHelper = require('../../helpers/sonos');
 const redisLastPositionKey = 'lastAddedPosition';
 
 let queue = {
-    song: {}
+    song: {},
+    mostRecent: {}
 };
 
 queue.song.add = {
@@ -62,7 +63,7 @@ queue.clear = {
     }
 };
 
-queue.resetMostRecent = {
+queue.mostRecent.reset = {
     handler: (redis) => (req, res, next) => {
         redis = promisifyAll(redis);
 

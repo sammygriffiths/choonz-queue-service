@@ -193,7 +193,7 @@ describe('Queue route', () => {
     describe('Reset most recent', () => {
         describe('Handler', () => {
             it('resets most recent in redis', () => {
-                queue.resetMostRecent.handler(redis)(req, res, () => {});
+                queue.mostRecent.reset.handler(redis)(req, res, () => {});
 
                 sinon.assert.calledWith(redis.delAsync, 'lastAddedPosition');
             });
@@ -202,7 +202,7 @@ describe('Queue route', () => {
                 redis.delAsync = sinon.stub().rejects(error);
                 let next = sinon.spy();
 
-                await queue.resetMostRecent.handler(redis)(req, res, next);
+                await queue.mostRecent.reset.handler(redis)(req, res, next);
 
                 sinon.assert.calledWith(next, error);
             });
