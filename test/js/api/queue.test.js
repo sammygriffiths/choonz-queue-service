@@ -31,7 +31,7 @@ describe('Queue route', () => {
             }
         };
         res = {
-            json: sinon.stub()
+            json: sinon.spy()
         }
     });
     describe('Songs route', () => {
@@ -163,18 +163,24 @@ describe('Queue route', () => {
 
                     sinon.assert.calledWith(next, error);
                 });
+
+                it('responds with appropriate json', async () => {
+                    await queue.songs.create.handler(sonos, redis)(req, res, () => {});
+
+                    sinon.assert.calledWith(res.json, { queuePosition: 3 });
+                });
             });
         });
         describe('Delete', () => {
             describe('Handler', () => {
-                it('clears the sonos queue', async () => {
-                    await queue.songs.delete.handler(sonos, redis)(req, res, () => {});
+                it('clears the sonos queue', () => {
+                    queue.songs.delete.handler(sonos, redis)(req, res, () => {});
                     
                     sinon.assert.calledOnce(sonos.flushAsync);
                 });
                 
-                it('resets most recent in redis', async () => {
-                    await queue.songs.delete.handler(sonos, redis)(req, res, () => {});
+                it('resets most recent in redis', () => {
+                    queue.songs.delete.handler(sonos, redis)(req, res, () => {});
                     
                     sinon.assert.calledWith(redis.delAsync, 'lastAddedPosition');
                 });
@@ -187,9 +193,15 @@ describe('Queue route', () => {
 
                     sinon.assert.calledWith(next, error);
                 });
+
+                it('responds with json', () => {
+                    queue.songs.delete.handler(sonos, redis)(req, res, () => {});
+
+                    sinon.assert.calledOnce(res.json);
+                });
             });
         });
-        describe('Recently added route', () => {
+        describe.only('Recently added route', () => {
             describe('Delete', () => {
                 describe('Handler', () => {
                     it('resets most recent in redis', () => {
@@ -205,6 +217,12 @@ describe('Queue route', () => {
                         await queue.songs.recentlyAdded.delete.handler(redis)(req, res, next);
 
                         sinon.assert.calledWith(next, error);
+                    });
+
+                    it('responds with json', () => {
+                        queue.songs.recentlyAdded.delete.handler(redis)(req, res, () => { });
+
+                        sinon.assert.calledOnce(res.json);
                     });
                 });
             });

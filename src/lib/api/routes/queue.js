@@ -72,6 +72,8 @@ queue.songs.recentlyAdded.delete = {
             console.log(e);
             next(e);
         });
+
+        res.json([]);
     }
 };
 
