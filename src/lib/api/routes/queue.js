@@ -61,6 +61,7 @@ queue.songs.delete = {
             next(e);
         });
 
+        res.status(204);
         res.json([]);
     }
 };
