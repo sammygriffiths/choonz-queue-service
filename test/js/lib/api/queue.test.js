@@ -2,7 +2,7 @@
 
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const queue = require('../../../src/lib/api/routes/queue.js');
+const queue = require('../../../../src/lib/api/routes/queue');
 
 let error = new Error('This is a mock error');
 
@@ -31,7 +31,8 @@ describe('Queue route', () => {
             }
         };
         res = {
-            json: sinon.spy()
+            json: sinon.spy(),
+            status: sinon.stub()
         }
     });
     describe('Songs route', () => {
@@ -201,7 +202,7 @@ describe('Queue route', () => {
                 });
             });
         });
-        describe.only('Recently added route', () => {
+        describe('Recently added route', () => {
             describe('Delete', () => {
                 describe('Handler', () => {
                     it('resets most recent in redis', () => {

@@ -30,6 +30,7 @@ queue.songs.create = {
 
             await redis.setAsync(redisLastPositionKey, newQueuePosition);
 
+            res.status(201);
             res.json({
                 queuePosition: newQueuePosition
             });

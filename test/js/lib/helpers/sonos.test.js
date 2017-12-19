@@ -2,7 +2,7 @@
 
 const expect = require('chai').use(require('chai-as-promised')).expect;
 const sinon = require('sinon');
-const sonosHelper = require('../../../src/lib/helpers/sonos');
+const sonosHelper = require('../../../../src/lib/helpers/sonos');
 
 describe('Sonos helper', () => {
     describe('calculateNewQueuePosition()', () => {

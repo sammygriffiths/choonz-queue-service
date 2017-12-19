@@ -4,8 +4,8 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const joi = require('joi');
 
-const validateClientInput = require('../../../src/lib/middleware/validateClientInput');
-const ClientValidationError = require('../../../src/lib/errors/ClientValidationError');
+const validateClientInput = require('../../../../src/lib/middleware/validateClientInput');
+const ClientValidationError = require('../../../../src/lib/errors/ClientValidationError');
 
 describe('validateClientInput', () => {
     it('calls next with a ClientValidationError if validation fails', () => {

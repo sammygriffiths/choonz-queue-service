@@ -10,7 +10,7 @@ module.exports = (dependencies) => {
 
     router.post('/songs',
         validateClientInput(queue.songs.create.clientInputSchema),
-        queue.song.add.handler(sonos, redis)
+        queue.songs.create.handler(sonos, redis)
     );
 
     router.delete('/songs', queue.songs.delete.handler(sonos, redis));
