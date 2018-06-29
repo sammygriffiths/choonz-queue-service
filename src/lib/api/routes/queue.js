@@ -32,7 +32,8 @@ queue.songs.create = {
 
             res.status(201);
             res.json({
-                queuePosition: newQueuePosition
+                queuePosition: newQueuePosition,
+                nowPlaying: currentQueuePosition
             });
         } catch(e) {
             console.log(e);
@@ -50,17 +51,17 @@ queue.songs.delete = {
     handler: (sonos, redis) => async (req, res, next) => {
         sonos = promisifyAll(sonos);
         redis = promisifyAll(redis);
-
+        
         sonos.flushAsync().catch((e) => {
             console.log(e);
             next(e);
         });
-
+        
         redis.delAsync(redisLastPositionKey).catch((e) => {
             console.log(e);
             next(e);
         });
-
+        
         res.status(204);
         res.json([]);
     }
