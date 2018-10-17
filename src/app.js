@@ -13,7 +13,7 @@ const api = require('./lib/api');
 const app = express();
 
 const spotifyRegion = process.env.SPOTIFY_REGION || 'EU';
-const sonos = new Sonos(process.env.SONOS_HOST || '192.168.1.8');
+const sonos = new Sonos(process.env.SONOS_HOST);
 sonos.setSpotifyRegion(sonosPackage.SpotifyRegion[spotifyRegion]);
 
 const redis = redisPackage.createClient({

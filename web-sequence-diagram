@@ -1,0 +1,14 @@
+https://www.websequencediagrams.com/
+
+title Choonz App - Add Song
+
+WebApp->+SpotifyAPI: Search
+SpotifyAPI->-WebApp: Results
+note right of WebApp: User chooses song
+WebApp->+QueueService: Song ID
+SonosAPI->QueueService: Current playing queue number
+Redis->QueueService: Last added song position
+note right of QueueService: Calculates place in queue
+QueueService->Redis: Last added song position
+QueueService->-SonosAPI: Song info
+
