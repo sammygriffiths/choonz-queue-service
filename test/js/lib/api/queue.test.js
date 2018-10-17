@@ -168,7 +168,7 @@ describe('Queue route', () => {
                 it('responds with appropriate json', async () => {
                     await queue.songs.create.handler(sonos, redis)(req, res, () => {});
 
-                    sinon.assert.calledWith(res.json, { queuePosition: 3 });
+                    sinon.assert.calledWith(res.json, { nowPlaying: 1, queuePosition: 3 });
                 });
             });
         });

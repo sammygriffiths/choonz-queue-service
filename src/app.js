@@ -13,7 +13,7 @@ const api = require('./lib/api');
 const app = express();
 
 const spotifyRegion = process.env.SPOTIFY_REGION || 'EU';
-const sonos = new Sonos(process.env.SONOS_HOST || '192.168.1.8');
+const sonos = new Sonos(process.env.SONOS_HOST);
 sonos.setSpotifyRegion(sonosPackage.SpotifyRegion[spotifyRegion]);
 
 const redis = redisPackage.createClient({
@@ -27,7 +27,11 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', process.env.REACT_APP_URL);
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
 
 app.use('/', api({ sonos, redis }));
 

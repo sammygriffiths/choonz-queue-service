@@ -15,10 +15,9 @@ let queue = {
 queue.songs.create = {
     handler: (sonos, redis) => async (req, res, next) => {
         try {
-            sonos = promisifyAll(sonos);
             redis = promisifyAll(redis);
 
-            let track = await sonos.currentTrackAsync();
+            let track = await sonos.currentTrack();
             let currentQueuePosition = track.queuePosition;
             let lastAddedPosition = await redis.getAsync(redisLastPositionKey) || 0;
             let newQueuePosition = await sonosHelper.calculateNewQueuePosition(
@@ -26,16 +25,17 @@ queue.songs.create = {
                 lastAddedPosition
             );
 
-            await sonos.queueAsync('spotify:track:' + req.body.spotify_id, newQueuePosition);
+            await sonos.queue('spotify:track:' + req.body.spotify_id, newQueuePosition);
 
             await redis.setAsync(redisLastPositionKey, newQueuePosition);
 
             res.status(201);
             res.json({
-                queuePosition: newQueuePosition
+                queuePosition: newQueuePosition,
+                nowPlaying: currentQueuePosition
             });
         } catch(e) {
-            console.log(e);
+            console.error(e);
             next(e);
         }
     },
@@ -48,19 +48,18 @@ queue.songs.create = {
 
 queue.songs.delete = {
     handler: (sonos, redis) => async (req, res, next) => {
-        sonos = promisifyAll(sonos);
         redis = promisifyAll(redis);
-
-        sonos.flushAsync().catch((e) => {
-            console.log(e);
-            next(e);
+        
+        sonos.flush().catch((e) => {
+            console.error(e);
+            return next(e);
         });
-
+        
         redis.delAsync(redisLastPositionKey).catch((e) => {
-            console.log(e);
-            next(e);
+            console.error(e);
+            return next(e);
         });
-
+        
         res.status(204);
         res.json([]);
     }
